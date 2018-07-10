@@ -1,36 +1,46 @@
-#include <SFML\Graphics.hpp>
+#include<SFML\Graphics.hpp>
 #include<SFML\Audio.hpp>
 #include<iostream>
 #include<vector>
 
-#define TEX_FOLDER "C:\\Users\\User\\Desktop\\"
+#define TEX_FOLDER "C:\\Users\\User\\source\\repos\\OPRA\\images\\"
 
 const int width = 800;
 const int height = 800;
 
-/*class Repository 
+class Repository 
 {
+	std::vector<std::pair<std::string, sf::Texture>> podaci;
+
 public:
-	sf::Texture* getItem()
+
+	sf::Texture getPodatak(std::string ime)
 	{
-		if (data == NULL)
+		for (auto unos : podaci)
 		{
-			// loadaj fajl
-			//data = new sf::Texture();
-			//data->loadFromFile(TEX_FOLDER"crvenajabuka.png");
-			data = new sf::Texture();
-			data->loadFromFile(TEX_FOLDER"crvenajabuka.png");
-			
+			if (unos.first == ime)
+			{
+				return unos.second;
+			}
 		}
-		return data;
+		// ako nije, loadam novi i spremim ju, pa to returnam
+		std::pair<std::string, sf::Texture> noviUnos;
 		
+		noviUnos.first = ime;
+
+			auto put = TEX_FOLDER +ime+".png";
+			sf::Texture nova;
+			nova.loadFromFile(put);
+
+		noviUnos.second = nova;
+
+		this->podaci.push_back(noviUnos);
+		return noviUnos.second;
 	}
-	
-private:
-	sf::Texture* data;
+
 
 };
-*/
+
 class Updatable
 {
 	public:
@@ -52,7 +62,7 @@ protected:
 };
 class Kosara :public ObjectOnScreen
 {
-
+	
 	const unsigned int coorX = 767;
 	const unsigned int coorY = 655;
 	sf::IntRect coords = { 133,9,coorX,coorY };
@@ -138,8 +148,7 @@ public:
 	
 	Jabuka (float initX, float initY): beginX(initX), beginY (initY)
 	{
-		//Repository r;
-		//auto texture = r.getItem();
+		
 		texture.loadFromFile(TEX_FOLDER"crvenajabuka.png");
 		sprite.setTexture(texture);
 		sprite.scale(this->scale, this->scale);
@@ -176,7 +185,16 @@ int main()
 	// create the window
 	sf::RenderWindow prozor(sf::VideoMode(width,height), "OPRA");
 	
-														/* S E T U P */
+										/* S E T U P */
+	
+	sf::Sprite score;
+	sf::Texture score1;
+	score1.loadFromFile(TEX_FOLDER"Score.png");
+	score.setTexture(score1);
+	score.scale(0.09f, 0.09f);
+	score.setPosition(10, 10);
+
+
 	sf::Sprite timer;
 	sf::Texture brojac;
 	brojac.loadFromFile(TEX_FOLDER"brojevi.png");
@@ -210,11 +228,15 @@ int main()
 	std::vector<sf::Drawable*>drowables;
 	std::vector<Jabuka*> jabuke;
 	
+
+	Repository rep;
 	sf::Sprite pozadina;
 	sf::Texture livada;
-	livada.loadFromFile(TEX_FOLDER"pozadina.png");
+	//livada.loadFromFile(TEX_FOLDER"pozadina.png");
+	auto texture = rep.getPodatak("pozadina");
+	//pozadina.setTexture(rep.getPodatak("pozadina"));
+	pozadina.setTexture(texture);
 	pozadina.scale(1.34f, 1.34f);
-	pozadina.setTexture(livada);
 	
 	Kosara korpa;
 	Jabuka crvenaJ((width / 2) - (1560*0.02) / 2,5);
@@ -362,8 +384,9 @@ int main()
 		{
 			prozor.draw(crvenaJ->getSprite());
 		}
-		prozor.draw(timer);
-		prozor.draw(timer1);
+		prozor.draw(score);
+		//prozor.draw(timer);
+		//prozor.draw(timer1);
 		prozor.draw(timer2);
 		prozor.draw(timer3);
 		/* S H O W */
